@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motion Detector</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+    #data { margin-top: 20px; font-size: 1.2em; }
+  </style>
+</head>
+<body>
+  <h2>Phone Motion Detector</h2>
+  <button id="start">Start Detection</button>
+  <div id="data">Waiting for motion...</div>
+
+  <script>
+    const startBtn = document.getElementById('start');
+    const dataDiv = document.getElementById('data');
+
+    function handleMotion(event) {
+      const a = event.accelerationIncludingGravity;
+      const g = event.rotationRate;
+
+      const accelMag = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z).toFixed(2);
+      dataDiv.innerHTML = `
+        <strong>Acceleration:</strong><br>
+        X: ${a.x?.toFixed(2)} m/s²<br>
+        Y: ${a.y?.toFixed(2)} m/s²<br>
+        Z: ${a.z?.toFixed(2)} m/s²<br>
+        Magnitude: ${accelMag} m/s²<br><br>
+        <strong>Rotation:</strong><br>
+        α: ${g.alpha?.toFixed(2)}°/s<br>
+        β: ${g.beta?.toFixed(2)}°/s<br>
+        γ: ${g.gamma?.toFixed(2)}°/s
+      `;
+    }
+
+    startBtn.onclick = async () => {
+      if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        const response = await DeviceMotionEvent.requestPermission();
+        if (response !== 'granted') {
+          alert('Permission denied');
+          return;
+        }
+      }
+      window.addEventListener('devicemotion', handleMotion);
+    };
+  </script>
+</body>
+</html>
